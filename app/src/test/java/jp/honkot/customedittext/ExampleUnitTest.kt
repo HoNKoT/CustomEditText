@@ -1,4 +1,4 @@
-package jp.honkot.customeditext
+package jp.honkot.customedittext
 
 import org.junit.Test
 

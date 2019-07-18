@@ -7,7 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 29
     defaultConfig {
-        applicationId "jp.honkot.customeditext"
+        applicationId "jp.honkot.customedittext"
         minSdkVersion 16
         targetSdkVersion 29
         versionCode 1

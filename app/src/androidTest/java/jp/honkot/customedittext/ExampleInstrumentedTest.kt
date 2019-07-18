@@ -1,4 +1,4 @@
-package jp.honkot.customeditext
+package jp.honkot.customedittext
 
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getTargetContext()
-        assertEquals("jp.honkot.customeditext", appContext.packageName)
+        assertEquals("jp.honkot.customedittext", appContext.packageName)
     }
 }

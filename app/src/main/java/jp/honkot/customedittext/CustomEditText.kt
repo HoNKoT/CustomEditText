@@ -2,15 +2,18 @@ package jp.honkot.customedittext
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.EditText
-import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.*
 import jp.honkot.customedittext.databinding.ViewCustomEditTextBinding
 
+@InverseBindingMethods(
+    InverseBindingMethod(
+        type = CustomEditText::class,
+        attribute = "text"
+    )
+)
 class CustomEditText @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -21,6 +24,14 @@ class CustomEditText @JvmOverloads constructor(
 
     private val viewModel: ViewModel
 
+    fun getText(): String {
+        return viewModel.input
+    }
+
+    fun setText(value: String) {
+        viewModel.input = value
+    }
+
     init {
         viewModel = ViewModel()
         binding = DataBindingUtil.inflate<ViewCustomEditTextBinding>(
@@ -30,28 +41,49 @@ class CustomEditText @JvmOverloads constructor(
             true
         )!!.also { binding ->
             binding.input.onFocusChangeListener = viewModel
+            binding.viewModel = viewModel
         }
     }
 
-    class ViewModel : BaseObservable(), OnFocusChangeListener {
+    fun getInputText(): String {
+        return viewModel.input
+    }
+
+    fun setInverseBindingListener(listener: InverseBindingListener) {
+        viewModel.listener = listener
+    }
+
+    inner class ViewModel : BaseObservable(), OnFocusChangeListener {
         @Bindable
         var input: String = ""
             set(value) {
                 field = value
+                listener?.onChange()
+                notifyPropertyChanged(BR.input)
                 showCaption.set(value.isNotEmpty())
             }
 
-        var hintAndCaption: String = ""
+        var listener: InverseBindingListener? = null
 
-        var showCaption = ObservableBoolean(true)
+        var hintAndCaption: String = "AAA"
+
+        var showCaption = ObservableBoolean(false)
 
         override fun onFocusChange(view: View?, focused: Boolean) {
             view?.let {
-                when {
-                    focused -> showCaption.set(true)
-                    else -> showCaption.set(input.isNotEmpty())
-                }
+                showCaption.set(when {
+                    focused -> true
+                    else -> input.isNotEmpty()
+                })
             }
+        }
+    }
+
+    object CustomEditTextBindingAdapter {
+        @BindingAdapter("textAttrChanged")
+        @JvmStatic
+        fun setTextWatcher(view: CustomEditText?, listener: InverseBindingListener) {
+            view?.setInverseBindingListener(listener)
         }
     }
 }

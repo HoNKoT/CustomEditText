@@ -1,6 +1,7 @@
 package jp.honkot.customedittext
 
 import android.content.Context
+import android.text.InputType
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -33,7 +34,12 @@ class CustomEditText @JvmOverloads constructor(
     }
 
     init {
-        viewModel = ViewModel()
+        val a = getContext().obtainStyledAttributes(
+            attrs, R.styleable.CustomEditText, defStyleAttr, 0)
+        val hint = a.getString(R.styleable.CustomEditText_hint) ?: ""
+        viewModel = ViewModel().also {
+            it.hintAndCaption = hint
+        }
         binding = DataBindingUtil.inflate<ViewCustomEditTextBinding>(
             LayoutInflater.from(context),
             R.layout.view_custom_edit_text,
@@ -43,6 +49,18 @@ class CustomEditText @JvmOverloads constructor(
             binding.input.onFocusChangeListener = viewModel
             binding.viewModel = viewModel
         }
+
+        val num = when (a.getInt(R.styleable.CustomEditText_inputType, 0)) {
+            1 -> InputType.TYPE_CLASS_NUMBER
+            2 -> InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+            3 -> InputType.TYPE_CLASS_TEXT
+            4 -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
+            5 -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            else -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
+        }
+        binding.input.inputType = num
+
+        a.recycle()
     }
 
     fun getInputText(): String {
